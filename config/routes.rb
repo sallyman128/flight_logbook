@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   resources :airports, only: [ :index, :show ]
 
   # React
-  get "/app", to: "react_shell#show"
-  get "/app/*path", to: "react_shell#show"
+  get "/app", to: "react_ui#show"
+  get "/app/*path", to: "react_ui#show"
 
   # Hotwire
   root "home#show"

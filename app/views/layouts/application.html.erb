@@ -23,6 +23,19 @@
   </head>
 
   <body>
+    <header>
+      <nav>
+        <% if Current.user %>
+          <%= form_with model: Current.user, class: "inline" do |user| %>
+            <%= user.hidden_field :ui_mode, value: (user.object.ui_mode == "hotwire" ? "react" : "hotwire") %>
+
+            <%= user.submit(
+                  user.object.ui_mode == "hotwire" ? "Switch to React" : "Switch to Hotwire"
+                ) %>
+          <% end %>
+        <% end %>
+      </nav>
+    </header>
     <main class="container mx-auto mt-28 px-5 flex">
       <%= yield %>
     </main>
