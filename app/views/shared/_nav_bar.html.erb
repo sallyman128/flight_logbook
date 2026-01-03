@@ -1,45 +1,99 @@
-<nav class="flex items-center justify-end gap-3">
-  <% if Current.user %>
-    <!-- UI Mode Toggle -->
-    <%= form_with model: Current.user, class: "inline-flex" do |user| %>
-      <%= user.hidden_field :ui_mode,
-            value: (user.object.ui_mode == "hotwire" ? "react" : "hotwire") %>
+<nav class="border-b border-slate-200 bg-white">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      
+      <!-- Left: App name + primary nav -->
+      <div class="flex items-center gap-8">
+        <!-- App name / logo -->
+        <%= link_to root_path, class: "flex items-center gap-2" do %>
+          <span class="text-lg font-semibold tracking-tight text-slate-900">
+            Flight Logbook
+          </span>
+        <% end %>
 
-      <%= user.submit(
-        user.object.ui_mode == "hotwire" ? "Switch to React" : "Switch to Hotwire",
-        class: "
-          inline-flex items-center gap-2
-          rounded-full
-          bg-slate-900 px-4 py-2
-          text-sm font-semibold text-white
-          shadow-sm
-          hover:bg-slate-800
-          focus-visible:outline focus-visible:outline-2
-          focus-visible:outline-offset-2
-          focus-visible:outline-slate-900
-          transition
-        "
-      ) %>
-    <% end %>
+        <% if Current.user %>
+          <!-- Primary nav links -->
+          <div class="hidden sm:flex items-center gap-6">
+            <%= link_to flights_path,
+                  class: "
+                    relative text-sm font-medium transition
+                    #{current_page?(flights_path) ?
+                      'text-slate-900' :
+                      'text-slate-600 hover:text-slate-900'}
+                  " do %>
+              Flights
+              <% if current_page?(flights_path) %>
+                <span class="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full bg-slate-900"></span>
+              <% end %>
+            <% end %>
 
-    <!-- Divider -->
-    <span class="h-6 w-px bg-slate-200"></span>
+            <%= link_to airports_path,
+                  class: "
+                    relative text-sm font-medium transition
+                    #{current_page?(airports_path) ?
+                      'text-slate-900' :
+                      'text-slate-600 hover:text-slate-900'}
+                  " do %>
+              Airports
+              <% if current_page?(airports_path) %>
+                <span class="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full bg-slate-900"></span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
 
-    <!-- Sign Out -->
-    <%= button_to "Sign Out",
-      session_path,
-      method: :delete,
-      class: "
-        inline-flex items-center
-        rounded-full
-        bg-white px-4 py-2
-        text-sm font-medium text-slate-700
-        ring-1 ring-inset ring-slate-300
-        hover:bg-slate-50 hover:text-slate-900
-        focus-visible:outline focus-visible:outline-2
-        focus-visible:outline-offset-2
-        focus-visible:outline-slate-900
-        transition
-      " %>
-  <% end %>
+      <!-- Right: user actions -->
+      <% if Current.user %>
+        <div class="flex items-center gap-3">
+          <!-- UI Mode Toggle -->
+          <%= form_with model: Current.user, class: "inline-flex" do |user| %>
+            <%= user.hidden_field :ui_mode,
+                  value: (user.object.ui_mode == "hotwire" ? "react" : "hotwire") %>
+
+            <%= user.submit(
+              user.object.ui_mode == "hotwire" ? "Switch to React" : "Switch to Hotwire",
+              class: "
+                inline-flex items-center
+                rounded-full
+                bg-slate-900 px-4 py-2
+                text-sm font-semibold text-white
+                shadow-sm
+                hover:bg-slate-800
+                focus-visible:outline focus-visible:outline-2
+                focus-visible:outline-offset-2
+                focus-visible:outline-slate-900
+                transition
+              "
+            ) %>
+          <% end %>
+
+          <!-- Divider -->
+          <span class="h-6 w-px bg-slate-200"></span>
+
+          <!-- User email (subtle, optional but nice) -->
+          <span class="hidden md:block text-sm text-slate-500">
+            <%= Current.user.email_address %>
+          </span>
+
+          <!-- Sign out -->
+          <%= button_to "Sign Out",
+                session_path,
+                method: :delete,
+                class: "
+                  inline-flex items-center
+                  rounded-full
+                  bg-white px-4 py-2
+                  text-sm font-medium text-slate-700
+                  ring-1 ring-inset ring-slate-300
+                  hover:bg-slate-50 hover:text-slate-900
+                  focus-visible:outline focus-visible:outline-2
+                  focus-visible:outline-offset-2
+                  focus-visible:outline-slate-900
+                  transition
+                " %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </nav>
