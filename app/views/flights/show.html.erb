@@ -1,0 +1,144 @@
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+          <%= @flight.departure_airport.iata_code %>
+        </span>
+        <span class="text-slate-400">→</span>
+        <span class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+          <%= @flight.arrival_airport.iata_code %>
+        </span>
+      </div>
+
+      <h1 class="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+        <%= @flight.departure_airport.name %> to <%= @flight.arrival_airport.name %>
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-600">
+        <%= @flight.departure_date.strftime("%B %-d, %Y") %>
+        <% if @flight.departure_time_local.present? || @flight.arrival_time_local.present? %>
+          <span class="text-slate-300">•</span>
+          <% if @flight.departure_time_local.present? %>
+            Departs <%= @flight.departure_time_local.strftime("%-I:%M %p") %>
+          <% end %>
+          <% if @flight.departure_time_local.present? && @flight.arrival_time_local.present? %>
+            <span class="text-slate-300">→</span>
+          <% end %>
+          <% if @flight.arrival_time_local.present? %>
+            Arrives <%= @flight.arrival_time_local.strftime("%-I:%M %p") %>
+          <% end %>
+        <% end %>
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= link_to "Back",
+            flights_path,
+            class: "inline-flex items-center rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition" %>
+
+      <%= link_to "Edit",
+            edit_flight_path(@flight),
+            class: "inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition" %>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="mt-8 flex flex-col gap-6 lg:flex-row">
+    <!-- Main column -->
+    <div class="flex-1 space-y-6">
+      <!-- Details card -->
+      <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-black/5">
+        <div class="border-b border-slate-200 px-5 py-4 sm:px-6">
+          <h2 class="text-sm font-semibold text-slate-900">Flight details</h2>
+          <p class="mt-1 text-sm text-slate-600">Everything you recorded about this flight.</p>
+        </div>
+
+        <dl class="divide-y divide-slate-200">
+          <% details = {
+            "Airline" => @flight.airline_name,
+            "Flight" => [@flight.airline_iata, @flight.flight_number].compact.join(" ").presence,
+            "Route" => "#{@flight.departure_airport.iata_code} → #{@flight.arrival_airport.iata_code}",
+            "Cabin" => @flight.cabin_class,
+            "Seat" => @flight.seat,
+            "Aircraft" => @flight.aircraft_type,
+            "Distance" => (@flight.distance_miles && "#{@flight.distance_miles} miles"),
+            "Duration" => (@flight.duration_minutes && "#{@flight.duration_minutes} minutes")
+          } %>
+
+          <% details.each do |label, value| %>
+            <div class="flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-4 sm:px-6">
+              <dt class="w-40 text-sm font-medium text-slate-600"><%= label %></dt>
+              <dd class="text-sm text-slate-900"><%= value.presence || "—" %></dd>
+            </div>
+          <% end %>
+
+          <div class="px-5 py-4 sm:px-6">
+            <dt class="text-sm font-medium text-slate-600">Notes</dt>
+            <dd class="mt-2 text-sm text-slate-900">
+              <%= @flight.notes.present? ? simple_format(@flight.notes) : "—" %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="rounded-xl bg-white p-5 shadow ring-1 ring-black/5 sm:p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900">Delete flight</h3>
+            <p class="mt-1 text-sm text-slate-600">This cannot be undone.</p>
+          </div>
+
+          <%= button_to "Delete",
+                flight_path(@flight),
+                method: :delete,
+                form: { data: { turbo_confirm: "Delete this flight?" } },
+                class: "
+                  inline-flex items-center rounded-full
+                  bg-white px-4 py-2
+                  text-sm font-semibold text-red-700
+                  ring-1 ring-inset ring-red-200
+                  hover:bg-red-50
+                  transition
+                " %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="w-full lg:w-80 space-y-6">
+      <div class="rounded-xl bg-white p-5 shadow ring-1 ring-black/5 sm:p-6">
+        <h2 class="text-sm font-semibold text-slate-900">Airports</h2>
+
+        <div class="mt-4 space-y-4">
+          <% [@flight.departure_airport, @flight.arrival_airport].each_with_index do |airport, i| %>
+            <div class="rounded-lg border border-slate-200 p-4">
+              <p class="text-xs font-semibold text-slate-600">
+                <%= i.zero? ? "Departure" : "Arrival" %>
+              </p>
+              <p class="mt-1 text-sm font-semibold text-slate-900">
+                <%= link_to airport.iata_code, airport_path(airport), class: "hover:underline" %>
+                <span class="font-normal text-slate-500">• <%= airport.city.presence || "—" %></span>
+              </p>
+              <p class="mt-1 text-xs text-slate-500">
+                <%= airport.latitude %>, <%= airport.longitude %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200 sm:p-6">
+        <h2 class="text-sm font-semibold text-slate-900">Map (coming soon)</h2>
+        <p class="mt-2 text-sm text-slate-600">
+          This flight will render as a route from
+          <span class="font-medium text-slate-900"><%= @flight.departure_airport.iata_code %></span>
+          to
+          <span class="font-medium text-slate-900"><%= @flight.arrival_airport.iata_code %></span>.
+        </p>
+      </div>
+    </aside>
+  </div>
+</div>
