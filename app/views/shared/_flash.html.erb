@@ -1,0 +1,43 @@
+<div class="fixed top-4 inset-x-0 z-50 flex justify-center pointer-events-none">
+  <div class="space-y-3 pointer-events-auto">
+    <% flash.each do |type, message| %>
+      <% next if message.blank? %>
+
+      <% css =
+        case type.to_sym
+        when :notice
+          "bg-green-600 text-white"
+        when :alert
+          "bg-red-600 text-white"
+        else
+          "bg-slate-800 text-white"
+        end
+      %>
+
+      <div
+        data-controller="flash"
+        data-flash-timeout-value="3000"
+        class="
+          flex items-start gap-3
+          w-80 rounded-lg p-4 shadow-lg
+          <%= css %>
+          transform transition-all duration-200 ease-out
+        "
+        role="alert"
+      >
+        <p class="text-sm font-medium leading-5">
+          <%= message %>
+        </p>
+
+        <button
+          type="button"
+          data-action="flash#dismiss"
+          class="ml-auto text-white/80 hover:text-white focus:outline-none"
+          aria-label="Dismiss"
+        >
+          ✕
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
