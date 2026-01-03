@@ -2,8 +2,6 @@ class HomeController < ApplicationController
   # before_action :require_authentication
 
   def show
-    if Current.user&.ui_mode == "react"
-      redirect_to "/app"
-    end
+    render "#{Current.user.ui_mode}"
   end
 end
