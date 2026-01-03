@@ -1,0 +1,229 @@
+<%= form_with model: flight, class: "space-y-8" do |f| %>
+  <% if flight.errors.any? %>
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+      <h3 class="text-sm font-semibold text-red-900">
+        <%= pluralize(flight.errors.count, "error") %> prevented saving
+      </h3>
+      <ul class="mt-2 list-disc pl-5 text-sm text-red-800">
+        <% flight.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Section: Required -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900">Required</h3>
+      <p class="text-xs text-slate-500">Date + route</p>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <%= f.label :departure_date, class: "text-sm font-medium text-slate-700" %>
+        <%= f.date_field :departure_date,
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex flex-col gap-4 sm:flex-row">
+        <div class="flex-1 flex flex-col gap-1">
+          <%= f.label :departure_airport_id, "Departure airport", class: "text-sm font-medium text-slate-700" %>
+          <%= f.collection_select :departure_airport_id, Airport.order(:iata_code), :id, :iata_code,
+                { prompt: "Select..." },
+                class: "
+                  w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                  focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+                " %>
+          <p class="text-xs text-slate-500">Example: DCA, IAD, JFK</p>
+        </div>
+
+        <div class="flex-1 flex flex-col gap-1">
+          <%= f.label :arrival_airport_id, "Arrival airport", class: "text-sm font-medium text-slate-700" %>
+          <%= f.collection_select :arrival_airport_id, Airport.order(:iata_code), :id, :iata_code,
+                { prompt: "Select..." },
+                class: "
+                  w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                  focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+                " %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-slate-200">
+
+  <!-- Section: Times -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900">Times</h3>
+      <p class="text-xs text-slate-500">Optional</p>
+    </div>
+
+    <div class="flex flex-col gap-4 sm:flex-row">
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :departure_time_local, "Departure time (local)", class: "text-sm font-medium text-slate-700" %>
+        <%= f.time_field :departure_time_local,
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :arrival_time_local, "Arrival time (local)", class: "text-sm font-medium text-slate-700" %>
+        <%= f.time_field :arrival_time_local,
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-slate-200">
+
+  <!-- Section: Flight info -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900">Flight info</h3>
+      <p class="text-xs text-slate-500">Optional</p>
+    </div>
+
+    <div class="flex flex-col gap-4 sm:flex-row">
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :airline_name, class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :airline_name, placeholder: "Delta, United, American…",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :airline_iata, "Airline code (IATA)", class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :airline_iata, placeholder: "DL, UA, AA…",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :flight_number, class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :flight_number, placeholder: "1234",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 sm:flex-row">
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :aircraft_type, class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :aircraft_type, placeholder: "A320, 737-900, A321neo…",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :cabin_class, class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :cabin_class, placeholder: "Economy, Business…",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :seat, class: "text-sm font-medium text-slate-700" %>
+        <%= f.text_field :seat, placeholder: "14A",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+    </div>
+  </section>
+
+  <hr class="border-slate-200">
+
+  <!-- Section: Metrics + notes -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900">Extras</h3>
+      <p class="text-xs text-slate-500">Optional</p>
+    </div>
+
+    <div class="flex flex-col gap-4 sm:flex-row">
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :distance_miles, class: "text-sm font-medium text-slate-700" %>
+        <%= f.number_field :distance_miles, min: 0, placeholder: "2475",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+
+      <div class="flex-1 flex flex-col gap-1">
+        <%= f.label :duration_minutes, class: "text-sm font-medium text-slate-700" %>
+        <%= f.number_field :duration_minutes, min: 0, placeholder: "360",
+              class: "
+                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+                placeholder:text-slate-400
+                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+              " %>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <%= f.label :notes, class: "text-sm font-medium text-slate-700" %>
+      <%= f.text_area :notes, rows: 4, placeholder: "Anything you want to remember about this trip…",
+            class: "
+              w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
+              placeholder:text-slate-400
+              focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
+            " %>
+    </div>
+  </section>
+
+  <!-- Actions -->
+  <div class="flex items-center justify-end gap-3 pt-2">
+    <%= link_to "Cancel",
+          flights_path,
+          class: "
+            inline-flex items-center rounded-full
+            bg-white px-4 py-2
+            text-sm font-medium text-slate-700
+            ring-1 ring-inset ring-slate-300
+            hover:bg-slate-50 hover:text-slate-900
+            transition
+          " %>
+
+    <%= f.submit "Save flight",
+          class: "
+            inline-flex items-center rounded-full
+            bg-slate-900 px-5 py-2
+            text-sm font-semibold text-white
+            shadow-sm
+            hover:bg-slate-800
+            focus-visible:outline focus-visible:outline-2
+            focus-visible:outline-offset-2
+            focus-visible:outline-slate-900
+            transition
+          " %>
+  </div>
+<% end %>
