@@ -14,11 +14,6 @@
 
   <!-- Section: Required -->
   <section class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-slate-900">Required</h3>
-      <p class="text-xs text-slate-500">Date + route</p>
-    </div>
-
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-1">
         <%= f.label :departure_date, class: "text-sm font-medium text-slate-700" %>
@@ -124,81 +119,9 @@
               " %>
       </div>
     </div>
-
-    <div class="flex flex-col gap-4 sm:flex-row">
-      <div class="flex-1 flex flex-col gap-1">
-        <%= f.label :aircraft_type, class: "text-sm font-medium text-slate-700" %>
-        <%= f.text_field :aircraft_type, placeholder: "A320, 737-900, A321neo…",
-              class: "
-                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-                placeholder:text-slate-400
-                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-              " %>
-      </div>
-
-      <div class="flex-1 flex flex-col gap-1">
-        <%= f.label :cabin_class, class: "text-sm font-medium text-slate-700" %>
-        <%= f.text_field :cabin_class, placeholder: "Economy, Business…",
-              class: "
-                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-                placeholder:text-slate-400
-                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-              " %>
-      </div>
-
-      <div class="flex-1 flex flex-col gap-1">
-        <%= f.label :seat, class: "text-sm font-medium text-slate-700" %>
-        <%= f.text_field :seat, placeholder: "14A",
-              class: "
-                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-                placeholder:text-slate-400
-                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-              " %>
-      </div>
-    </div>
   </section>
 
   <hr class="border-slate-200">
-
-  <!-- Section: Metrics + notes -->
-  <section class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-slate-900">Extras</h3>
-      <p class="text-xs text-slate-500">Optional</p>
-    </div>
-
-    <div class="flex flex-col gap-4 sm:flex-row">
-      <div class="flex-1 flex flex-col gap-1">
-        <%= f.label :distance_miles, class: "text-sm font-medium text-slate-700" %>
-        <%= f.number_field :distance_miles, min: 0, placeholder: "2475",
-              class: "
-                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-                placeholder:text-slate-400
-                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-              " %>
-      </div>
-
-      <div class="flex-1 flex flex-col gap-1">
-        <%= f.label :duration_minutes, class: "text-sm font-medium text-slate-700" %>
-        <%= f.number_field :duration_minutes, min: 0, placeholder: "360",
-              class: "
-                w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-                placeholder:text-slate-400
-                focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-              " %>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-1">
-      <%= f.label :notes, class: "text-sm font-medium text-slate-700" %>
-      <%= f.text_area :notes, rows: 4, placeholder: "Anything you want to remember about this trip…",
-            class: "
-              w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900
-              placeholder:text-slate-400
-              focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200
-            " %>
-    </div>
-  </section>
 
   <!-- Actions -->
   <div class="flex items-center justify-end gap-3 pt-2">
