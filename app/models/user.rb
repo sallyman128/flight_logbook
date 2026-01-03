@@ -8,4 +8,12 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   validates :ui_mode, inclusion: { in: UI_MODES }
+
+  def react_ui?
+    ui_mode == "react"
+  end
+
+  def hotwire_ui?
+    ui_mode == "hotwire"
+  end
 end
