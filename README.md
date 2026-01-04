@@ -1,24 +1,14 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+First time instructions:
 
-Things you may want to cover:
+Run `bin/setup; bin/dev` to prepare the database, seed it, and start the server.
 
-* Ruby version
+Then go to `localhost:3000` to sign in with the test user:
 
-* System dependencies
+```
+username: demo@example.com
+password: password
+```
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+From here, you can add flights and see the data displayed on the root page with the map ui.
