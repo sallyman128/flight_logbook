@@ -37,12 +37,10 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: |
-          bin/rails db:prepare
+        run: bin/rails db:prepare
 
       - name: Run RSpec
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: |
-          bundle exec rspec
+        run: bundle exec rspec
