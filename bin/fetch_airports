@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require_relative "../config/environment"
+
+puts "Deleting existing airports…"
+Airport.delete_all
+
+puts "Importing airports…"
+AirportImporter.import!
+
+puts "Done! Airports count: #{Airport.count}"

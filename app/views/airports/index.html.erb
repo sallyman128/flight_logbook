@@ -1,0 +1,96 @@
+<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+      Airports
+    </h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Major airports available for flight logging.
+    </p>
+  </div>
+
+  <!-- Table -->
+  <turbo-frame id="airports-index-table">
+    <div class="min-h-120 overflow-hidden rounded-xl bg-white shadow ring-1 ring-black/5">
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-fixed divide-y divide-slate-200">
+          <thead class="bg-slate-50">
+            <tr>
+              <th class="w-24 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 sm:px-6">
+                IATA
+              </th>
+              <th class="w-md px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 sm:px-6">
+                Name
+              </th>
+              <th class="w-56 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 sm:px-6">
+                City
+              </th>
+              <th class="w-32 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 sm:px-6">
+                Region
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-200 bg-white">
+            <% @airports.each do |airport| %>
+              <tr class="hover:bg-slate-50">
+                <td class="whitespace-nowrap px-4 py-4 text-sm font-medium text-slate-900 sm:px-6">
+                  <%= airport.iata_code.presence || "—" %>
+                </td>
+
+                <td class="px-4 py-4 text-sm text-slate-900 sm:px-6">
+                  <div class="truncate" title="<%= airport.name %>">
+                    <%= airport.name %>
+                  </div>
+                </td>
+
+                <td class="px-4 py-4 text-sm text-slate-700 sm:px-6">
+                  <div class="truncate" title="<%= airport.city %>">
+                    <%= airport.city.presence || "—" %>
+                  </div>
+                </td>
+
+                <td class="whitespace-nowrap px-4 py-4 text-sm text-slate-700 sm:px-6">
+                  <%= airport.region.presence || "—" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if @airports.any? %>
+        <div class="border-t border-slate-200 px-4 py-4 sm:px-6 flex items-center justify-between text-sm">
+          <div class="text-slate-600">
+            Page <span class="font-medium text-slate-900"><%= @airports.current_page %></span>
+            of <span class="font-medium text-slate-900"><%= @airports.total_pages %></span>
+            <span class="text-slate-300">•</span>
+            <span class="font-medium text-slate-900"><%= @airports.total_count %></span> airports
+          </div>
+
+          <div class="flex items-center gap-2">
+            <% if @airports.prev_page %>
+              <%= link_to "Prev",
+                    airports_path(page: @airports.prev_page),
+                    data: { turbo_frame: "airports-index-table" },
+                    class: "rounded-full bg-white px-4 py-2 font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition" %>
+            <% end %>
+
+            <% if @airports.next_page %>
+              <%= link_to "Next",
+                    airports_path(page: @airports.next_page),
+                    data: { turbo_frame: "airports-index-table" },
+                    class: "rounded-full bg-white px-4 py-2 font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @airports.empty? %>
+        <div class="p-8 text-center text-sm text-slate-600">
+          No airports found.
+        </div>
+      <% end %>
+    </div>
+  </turbo-frame>
+</div>

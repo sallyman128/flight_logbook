@@ -74,3 +74,5 @@ gem "flipper-active_record", "~> 1.3"
 gem "flipper-ui", "~> 1.3"
 
 gem "csv", "~> 3.3"
+
+gem "kaminari", "~> 1.2"
