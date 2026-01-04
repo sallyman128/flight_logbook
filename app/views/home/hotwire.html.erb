@@ -1,1 +1,139 @@
-<h1>Hotwire Home Page</h1>
+<%# Leaflet CSS/JS via CDN (simple, no bundler/importmap needed) %>
+<% content_for :head do %>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+    defer
+  ></script>
+<% end %>
+
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Your Flight Map</h1>
+      <p class="mt-1 text-sm text-slate-600">
+        Visualize your logged flights as routes between airports.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= link_to "Flights",
+            flights_path,
+            class: "rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition" %>
+
+      <%= link_to "Log a flight",
+            new_flight_path,
+            class: "rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition" %>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-black/5">
+    <div class="border-b border-slate-200 px-5 py-4 sm:px-6 flex items-center justify-between">
+      <div class="text-sm text-slate-600">
+        <span class="font-medium text-slate-900"><%= @map_flights.size %></span>
+        routes shown
+      </div>
+
+      <div class="text-xs text-slate-500">
+        Tip: click a route to see details.
+      </div>
+    </div>
+
+    <div class="px-5 py-5 sm:px-6">
+      <div id="flight-map" class="h-[70vh] w-full rounded-lg ring-1 ring-slate-200"></div>
+
+      <script type="application/json" id="flights-data">
+        <%= raw(@map_flights.to_json) %>
+      </script>
+
+      <script>
+        document.addEventListener("turbo:load", () => {
+          const mapEl = document.getElementById("flight-map");
+          if (!mapEl) return;
+
+          // Prevent double-init when Turbo caches/restores
+          if (mapEl.dataset.initialized === "true") return;
+          mapEl.dataset.initialized = "true";
+
+          const dataEl = document.getElementById("flights-data");
+          const flights = dataEl ? JSON.parse(dataEl.textContent) : [];
+
+          // Create map
+          const map = L.map("flight-map", { scrollWheelZoom: true });
+
+          // OSM tiles
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(map);
+
+          const bounds = L.latLngBounds([]);
+
+          const palette = [
+            "#2563eb", // blue
+            "#16a34a", // green
+            "#dc2626", // red
+            "#7c3aed", // purple
+            "#ea580c", // orange
+            "#0d9488", // teal
+            "#db2777", // pink
+            "#4b5563"  // slate
+          ]
+
+          function colorForYear(year) {
+            if (!year) return "#4b5563" // fallback
+            const idx = Math.abs(Number(year)) % palette.length
+            return palette[idx]
+          }
+
+          flights.forEach((f) => {
+            if (!f.departure || !f.arrival) return;
+
+            const dep = L.latLng(f.departure.lat, f.departure.lng);
+            const arr = L.latLng(f.arrival.lat, f.arrival.lng);
+
+            bounds.extend(dep);
+            bounds.extend(arr);
+
+            // Markers
+            L.circleMarker(dep, { radius: 5 }).addTo(map)
+              .bindPopup(`<strong>${f.departure.code}</strong> — ${f.departure.name}`);
+
+            L.circleMarker(arr, { radius: 5 }).addTo(map)
+              .bindPopup(`<strong>${f.arrival.code}</strong> — ${f.arrival.name}`);
+
+            // Route line
+            const year = f.year
+            const color = colorForYear(year)
+
+            const line = L.polyline([dep, arr], { weight: 3, opacity: 0.85, color }).addTo(map)
+
+            const title = `${f.departure.code} → ${f.arrival.code}`;
+            const when = f.departure_date ? `(${f.departure_date})` : "";
+
+            line.bindPopup(`
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">${title} ${when}</div>
+                <div class="text-xs text-slate-600">${f.departure.name} → ${f.arrival.name}</div>
+              </div>
+            `);
+          });
+
+          if (flights.length > 0 && bounds.isValid()) {
+            map.fitBounds(bounds.pad(0.2));
+          } else {
+            // Default view: US
+            map.setView([39.5, -98.35], 4);
+          }
+        });
+      </script>
+    </div>
+  </div>
+</div>
