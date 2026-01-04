@@ -13,7 +13,7 @@ class AirportImporter
 
     rows.each do |row|
       iata = row["iata_code"].to_s.strip
-      next if iata.blank? # REQUIRED by your schema
+      next if iata.blank?
 
       airports << {
         iata_code: iata,
