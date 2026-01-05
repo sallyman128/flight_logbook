@@ -2,7 +2,7 @@
 
 First time instructions:
 
-Run `bin/setup; bin/dev` to prepare the database, seed it, and start the server.
+Run `bin/setup; bin/dev` to install dependencies, prepare the database, and start the server.
 
 Then go to `localhost:3000` to sign in with the test user:
 
