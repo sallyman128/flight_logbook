@@ -14,6 +14,19 @@
         <% if Current.user %>
           <!-- Primary nav links -->
           <div class="hidden sm:flex items-center gap-6">
+            <%= link_to root_path,
+                  class: "
+                    relative text-sm font-medium transition
+                    #{current_page?(root_path) ?
+                      'text-slate-900' :
+                      'text-slate-600 hover:text-slate-900'}
+                  " do %>
+              Dashboard
+              <% if current_page?(root_path) %>
+                <span class="absolute -bottom-2 left-0 right-0 h-0.5 rounded-full bg-slate-900"></span>
+              <% end %>
+            <% end %>
+
             <%= link_to flights_path,
                   class: "
                     relative text-sm font-medium transition

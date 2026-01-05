@@ -20,6 +20,7 @@ ord = Airport.find_by(iata_code: "ORD")
 sea = Airport.find_by(iata_code: "SEA")
 lax = Airport.find_by(iata_code: "LAX")
 user.flights.create(departure_date: Date.today, departure_airport: iad, arrival_airport: sea)
+user.flights.create(departure_date: Date.today, departure_airport: sea, arrival_airport: ord)
 user.flights.create(departure_date: Date.today - 1.year, departure_airport: ord, arrival_airport: lax)
 user.flights.create(departure_date: Date.today - 2.years, departure_airport: lax, arrival_airport: sea)
 

@@ -1,4 +1,6 @@
-<%# Leaflet CSS/JS via CDN (simple, no bundler/importmap needed) %>
+<%# app/views/flights/map.html.erb %>
+
+<%# Leaflet CSS/JS via CDN %>
 <% content_for :head do %>
   <link
     rel="stylesheet"
@@ -14,95 +16,151 @@
   ></script>
 <% end %>
 
+<div class="mx-1 flex flex-1 flex-col px-4 py-8 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+        Flight Map
+      </h1>
+      <p class="mt-1 max-w-2xl text-sm text-slate-600">
+        A visual log of your travel history. Each route represents a flight you’ve logged.
+      </p>
+    </div>
 
-<div class="mx-1 px-4 py-8 flex-1 sm:px-6 lg:px-8">
-  <div class="px-5 py-5 sm:px-6">
-    <div id="flight-map" class="h-[70vh] w-full rounded-lg ring-1 ring-slate-200"></div>
+    <%= link_to "Log a flight",
+          new_flight_path,
+          class: "
+            inline-flex items-center rounded-full
+            bg-slate-900 px-4 py-2
+            text-sm font-semibold text-white
+            shadow-sm
+            hover:bg-slate-800
+            focus-visible:outline focus-visible:outline-2
+            focus-visible:outline-offset-2
+            focus-visible:outline-slate-900
+          " %>
+  </div>
 
-    <script type="application/json" id="flights-data">
-      <%= raw(@map_flights.to_json) %>
-    </script>
+  <!-- Map -->
+  <div class="relative flex flex-1">
+    <div class="relative flex-1">
+      <div
+        id="flight-map"
+        class="h-[70vh] w-full rounded-xl bg-slate-50 ring-1 ring-slate-200"
+      ></div>
 
-    <script>
-      document.addEventListener("turbo:load", () => {
-        const mapEl = document.getElementById("flight-map");
-        if (!mapEl) return;
+      <% if @map_flights.blank? %>
+        <!-- Empty state overlay -->
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div class="rounded-xl bg-white/90 px-6 py-5 text-center shadow ring-1 ring-black/5">
+            <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
+              ✈️
+            </div>
+            <p class="text-sm font-semibold text-slate-900">
+              No flights yet
+            </p>
+            <p class="mt-1 text-sm text-slate-600">
+              Add a flight to start building your map.
+            </p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 
-        // Prevent double-init when Turbo caches/restores
-        if (mapEl.dataset.initialized === "true") return;
-        mapEl.dataset.initialized = "true";
+  <!-- Data for JS -->
+  <script type="application/json" id="flights-data">
+    <%= raw(@map_flights.to_json) %>
+  </script>
 
-        const dataEl = document.getElementById("flights-data");
-        const flights = dataEl ? JSON.parse(dataEl.textContent) : [];
+  <!-- Map JS -->
+  <script>
+    document.addEventListener("turbo:load", () => {
+      const mapEl = document.getElementById("flight-map");
+      if (!mapEl) return;
+      if (mapEl.dataset.initialized === "true") return;
+      mapEl.dataset.initialized = "true";
 
-        // Create map
-        const map = L.map("flight-map", { scrollWheelZoom: true });
+      const flights = JSON.parse(
+        document.getElementById("flights-data")?.textContent || "[]"
+      );
 
-        // OSM tiles
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 18,
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+      const map = L.map("flight-map", { scrollWheelZoom: true });
 
-        const bounds = L.latLngBounds([]);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "&copy; OpenStreetMap contributors"
+      }).addTo(map);
 
-        const palette = [
-          "#2563eb", // blue
-          "#16a34a", // green
-          "#dc2626", // red
-          "#7c3aed", // purple
-          "#ea580c", // orange
-          "#0d9488", // teal
-          "#db2777", // pink
-          "#4b5563"  // slate
-        ]
+      const bounds = L.latLngBounds([]);
 
-        function colorForYear(year) {
-          if (!year) return "#4b5563" // fallback
-          const idx = Math.abs(Number(year)) % palette.length
-          return palette[idx]
-        }
+      const palette = [
+        "#2563eb", // blue
+        "#16a34a", // green
+        "#dc2626", // red
+        "#7c3aed", // purple
+        "#ea580c", // orange
+        "#0d9488", // teal
+        "#db2777", // pink
+        "#4b5563"  // slate
+      ];
 
-        flights.forEach((f) => {
-          if (!f.departure || !f.arrival) return;
+      function colorForYear(year) {
+        if (!year) return "#4b5563";
+        return palette[Math.abs(Number(year)) % palette.length];
+      }
 
-          const dep = L.latLng(f.departure.lat, f.departure.lng);
-          const arr = L.latLng(f.arrival.lat, f.arrival.lng);
+      flights.forEach((f) => {
+        if (!f.departure || !f.arrival) return;
 
-          bounds.extend(dep);
-          bounds.extend(arr);
+        const dep = L.latLng(f.departure.lat, f.departure.lng);
+        const arr = L.latLng(f.arrival.lat, f.arrival.lng);
 
-          // Markers
-          L.circleMarker(dep, { radius: 5 }).addTo(map)
-            .bindPopup(`<strong>${f.departure.code}</strong> — ${f.departure.name}`);
+        bounds.extend(dep);
+        bounds.extend(arr);
 
-          L.circleMarker(arr, { radius: 5 }).addTo(map)
-            .bindPopup(`<strong>${f.arrival.code}</strong> — ${f.arrival.name}`);
+        const color = colorForYear(f.year);
 
-          // Route line
-          const year = f.year
-          const color = colorForYear(year)
+        L.circleMarker(dep, {
+          radius: 5,
+          color,
+          fillColor: color,
+          fillOpacity: 0.9
+        }).addTo(map)
+          .bindPopup(`<strong>${f.departure.code}</strong> — ${f.departure.name}`);
 
-          const line = L.polyline([dep, arr], { weight: 3, opacity: 0.85, color }).addTo(map)
+        L.circleMarker(arr, {
+          radius: 5,
+          color,
+          fillColor: color,
+          fillOpacity: 0.9
+        }).addTo(map)
+          .bindPopup(`<strong>${f.arrival.code}</strong> — ${f.arrival.name}`);
 
-          const title = `${f.departure.code} → ${f.arrival.code}`;
-          const when = f.departure_date ? `(${f.departure_date})` : "";
-
-          line.bindPopup(`
+        L.polyline([dep, arr], {
+          weight: 3,
+          opacity: 0.85,
+          color
+        }).addTo(map)
+          .bindPopup(`
             <div class="space-y-1">
-              <div class="text-sm font-semibold">${title} ${when}</div>
-              <div class="text-xs text-slate-600">${f.departure.name} → ${f.arrival.name}</div>
+              <div class="text-sm font-semibold">
+                ${f.departure.code} → ${f.arrival.code}
+                ${f.departure_date ? `(${f.departure_date})` : ""}
+              </div>
+              <div class="text-xs text-slate-600">
+                ${f.departure.name} → ${f.arrival.name}
+              </div>
             </div>
           `);
-        });
-
-        if (flights.length > 0 && bounds.isValid()) {
-          map.fitBounds(bounds.pad(0.2));
-        } else {
-          // Default view: US
-          map.setView([39.5, -98.35], 4);
-        }
       });
-    </script>
-  </div>
+
+      if (flights.length > 0 && bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.2));
+      } else {
+        map.setView([39.5, -98.35], 4);
+      }
+    });
+  </script>
 </div>
